@@ -3,7 +3,7 @@
 This widget allows you to display a nice-looking calendar on your desktop. Works especially well with tiling window managers like [yabai](https://github.com/koekeishiya/yabai)
 
 ## Screenshot
-![Ubersicht-calendar](https://github.com/knazarov/ubersicht-calendar/blob/master/calendar.png?raw=true)
+![Ubersicht-calendar](https://github.com/knazarov/ubersicht-calendar/blob/master/screenshot.png?raw=true)
 
 ## Installation
 
