@@ -1,11 +1,15 @@
 #loosely based on https://github.com/cbeardsmore/Upcoming-iCal-Events/blob/master/Upcoming-iCal-Events.widget/main.coffee
 
+# --------------- CUSTOMIZE ME ---------------
+# these are dimensions of the widget in pixels
 TOP = 58
 LEFT = 24
-BOTTOM = 24
+BOTTOM = 2
 WIDTH = 210
 
+# how many pixels one-hour event occupies vertically
 BLOCK_HEIGHT = 70
+# --------------------------------------------
 
 # Construct bash command using options.
 # Refer to https://hasseg.org/icalBuddy/man.html
@@ -17,14 +21,20 @@ command: executablePath + options + baseCommand
 
 refreshFrequency: 60000
 
-# CSS styling
 style: """
     top: #{TOP}px
-    left: #{LEFT+4}px
+    left: #{LEFT}px
     bottom: #{BOTTOM}px
-    width: #{WIDTH-8}px
+    width: #{WIDTH}px
     color: black
     font-family: Helvetica
+    background-color: #ffffff;
+    border-width: 2px;
+    border: solid;
+    border-color: #555555;
+    //opacity: 0.125
+    z-index: -1
+
     div
         display: block
         color white
@@ -77,10 +87,8 @@ style: """
         display: inline-block;
 """
 
-# Initial render for heading
 render: (output) -> """
 """
-
 
 hours: (str) ->
     regex = /(\d+):(\d+)/
@@ -88,8 +96,6 @@ hours: (str) ->
     return parseInt(result[1]) + parseInt(result[2])/60
 
 
-
-# Update when refresh occurs
 update: (output, domEl) ->
     lines = output.split('\n')
     lines = lines.filter (line) -> line isnt ""
@@ -97,8 +103,6 @@ update: (output, domEl) ->
     bullet = lines[0][0]
     dom = $(domEl)
     dom.empty()
-
-    #console.log(lines)
 
     today = new Date()
     current_time = today.getHours().toString().padStart(2, '0') + ":" + today.getMinutes().toString().padStart(2, '0')
@@ -115,7 +119,6 @@ update: (output, domEl) ->
 
     min_hour = Math.floor(min_hour) - 0.5
 
-    # Go over all events and append data into the DOM
     for line in lines
         result = line_regex.exec(line)
         start_date = result[1]
@@ -127,26 +130,20 @@ update: (output, domEl) ->
         diff_hours = (@hours(end_time) - @hours(start_time))
         rel_start_hour = @hours(start_time) - min_hour
 
-        #console.log(min_hour, @hours(start_time))
-
         start_pos = rel_start_hour * BLOCK_HEIGHT
         height = diff_hours * BLOCK_HEIGHT
-
-        #console.log(start_pos, height)
 
         str = """<div id="subhead" style="position: absolute; top: #{start_pos+21}px; height: #{height-12}px;">
             #{title}
             </div> """
-        #console.log(str)
-        dom.append(str)
 
+        dom.append(str)
 
     for hour in [Math.floor(min_hour+1)...25]
         rel_current_hour = hour - min_hour
 
         dom.append("""<hr id="hour-line" style="position: absolute; top: #{rel_current_hour * BLOCK_HEIGHT + 11}px;"></hr>""")
         dom.append("""<span id="hour-text" style="position: absolute; top: #{rel_current_hour * BLOCK_HEIGHT + 11 + 2}px;">#{hour}:00</span>""")
-
 
     rel_current_hour = current_hour - min_hour
     dom.append("""<hr id="line" style="position: absolute; top: #{rel_current_hour * BLOCK_HEIGHT + 11}px;"></hr>""")

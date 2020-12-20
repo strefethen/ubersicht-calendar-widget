@@ -3,7 +3,7 @@
 This widget allows you to display a nice-looking calendar on your desktop. Works especially well with tiling window managers like [yabai](https://github.com/koekeishiya/yabai)
 
 ## Screenshot
-![Ubersicht-calendar](https://github.com/knazarov/ubersicht-calendar/blob/master/screenshot.png?raw=true)
+![Ubersicht-calendar](https://github.com/knazarov/ubersicht-calendar/blob/master/screenshot-full.png?raw=true)
 
 ## Installation
 
@@ -16,3 +16,7 @@ To get information from the MacOS calendar, this widget needs [icalBuddy](http:/
 ```bash
 brew install ical-buddy
 ```
+
+## Customization
+
+You can customize the size of the widget in the `calendar.coffee` file. It contains the `CUSTOMIZE ME` section in the beginning, that has a few variables you can tune.
