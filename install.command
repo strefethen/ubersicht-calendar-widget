@@ -1,3 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-brew install ical-buddy
+if ! icalBuddy -V &> /dev/null
+then
+    brew install ical-buddy
+else
+    echo "ical-buddy already installed"
+fi
