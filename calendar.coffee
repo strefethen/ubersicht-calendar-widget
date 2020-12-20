@@ -32,7 +32,8 @@ style: """
     border-width: 2px;
     border: solid;
     border-color: #555555;
-    //opacity: 0.125
+    overflow: hidden;
+
     z-index: -1
 
     div
