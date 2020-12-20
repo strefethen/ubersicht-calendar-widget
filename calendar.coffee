@@ -4,7 +4,7 @@
 # these are dimensions of the widget in pixels
 TOP = 58
 LEFT = 24
-BOTTOM = 2
+BOTTOM = 24
 WIDTH = 210
 
 # how many pixels one-hour event occupies vertically
