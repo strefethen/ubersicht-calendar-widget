@@ -15,7 +15,7 @@ BLOCK_HEIGHT = 70
 # Refer to https://hasseg.org/icalBuddy/man.html
 executablePath = "/usr/local/bin/icalBuddy "
 baseCommand = ' eventsToday'
-options = "-npn -nrd -nc -b '' -iep 'title,datetime' -ps '| : |' -po 'datetime,title' -tf '%H:%M' -df '%Y-%m-%d'"
+options = "-npn -nrd -nc -b '' -nnr ' ' -iep 'title,datetime,notes' -ps '|•|' -po 'datetime,title,notes' -tf '%H:%M' -df '%Y-%m-%d'"
 
 command: executablePath + options + baseCommand
 
@@ -34,7 +34,7 @@ style: """
     border-color: #555555;
     overflow: hidden;
 
-    z-index: -1
+    z-index: 0
 
     div
         display: block
@@ -45,7 +45,7 @@ style: """
     #head
         font-weight: bold
         font-size 20px
-    #subhead
+    .subhead
         font-weight: bold
         font-size: 12px
         border-left: solid 4px
@@ -56,9 +56,18 @@ style: """
         padding-left: 5px
         background-color: #eeeeee
 
+        mix-blend-mode: multiply;
+
         left: 50px
-        width: #{WIDTH-67}px;
+
         color: #000000
+        overflow: hidden
+
+    .subhead:hover
+        background-color: #a0b8f0
+        cursor: pointer
+        cursor: hand
+
     #line
         left: 37px;
         width: #{WIDTH-45}px;
@@ -97,6 +106,17 @@ hours: (str) ->
     return parseInt(result[1]) + parseInt(result[2])/60
 
 
+intersects: (ev1, ev2) ->
+    if ev1.start_time >= ev2.end_time or ev1.end_time <= ev2.start_time
+        return false
+
+    return true
+
+afterRender: (domEl) ->
+  $(domEl).on 'click', '.subhead', (e) =>
+    link = $(e.currentTarget).attr 'data-link'
+    @run "open " + link
+
 update: (output, domEl) ->
     lines = output.split('\n')
     lines = lines.filter (line) -> line isnt ""
@@ -105,13 +125,17 @@ update: (output, domEl) ->
     dom = $(domEl)
     dom.empty()
 
+    dom.append("""<link rel="stylesheet" href="./calendar/assets/font-awesome/css/all.css" />
+""")
+
     today = new Date()
     current_time = today.getHours().toString().padStart(2, '0') + ":" + today.getMinutes().toString().padStart(2, '0')
 
     current_hour =  today.getHours() + today.getMinutes() / 60
     min_hour = current_hour
 
-    line_regex = /^(\d+-\d+-\d+)?(?: at )?(\d+:\d+) - (\d+-\d+-\d+)?(?: at )?(\d+:\d+) : (.*)$/
+    line_regex = /^(\d+-\d+-\d+)?(?: at )?(\d+:\d+) - (\d+-\d+-\d+)?(?: at )?((?:\d+:\d+)|(?:\.\.\.))•([^•]*)•?([^•]*)?$/
+    link_regex = /(https:\/\/.*zoom\.us\/j\/[^ ]*)/
 
     for line in lines
         start_time = line_regex.exec(line)[2]
@@ -120,22 +144,59 @@ update: (output, domEl) ->
 
     min_hour = Math.floor(min_hour) - 0.5
 
+    events = []
+
     for line in lines
         result = line_regex.exec(line)
-        start_date = result[1]
-        start_time = result[2]
-        end_date = result[3] or result[1]
-        end_time = result[4]
-        title = result[5]
+        if result[4] == '...'
+            result[4] = "24:00"
 
-        diff_hours = (@hours(end_time) - @hours(start_time))
-        rel_start_hour = @hours(start_time) - min_hour
+        link = link_regex.exec(result[6])
+
+        event =
+            start_date: result[1]
+            start_time: @hours(result[2])
+            end_date: result[3] or result[1]
+            end_time: @hours(result[4])
+            title: result[5]
+            notes: result[6]
+            link: link or ""
+
+        events.push(event)
+
+    for event in events
+        diff_hours = (event.end_time - event.start_time)
+        rel_start_hour = event.start_time - min_hour
 
         start_pos = rel_start_hour * BLOCK_HEIGHT
         height = diff_hours * BLOCK_HEIGHT
 
-        str = """<div id="subhead" style="position: absolute; top: #{start_pos+21}px; height: #{height-12}px;">
-            #{title}
+        left = 50
+        wdth = WIDTH-67;
+
+        for ev in events
+            if @intersects(event, ev)
+                if Math.abs(event.start_time - ev.start_time) < 0.5
+                    if event.start_time < ev.start_time
+                        wdth = (WIDTH-67) / 2
+                    if event.start_time == ev.start_time and event.end_time > ev.end_time
+                        wdth = (WIDTH-67) / 2
+                    if event.start_time > ev.start_time or event.end_time < ev.end_time
+                        wdth = (WIDTH-67) / 2 - 11
+                        left = 50 + (WIDTH-67) / 2 + 11
+                else
+                    if event.start_time > ev.start_time
+                        left = 55
+                        wdth = WIDTH-67 - 5
+
+        video_icon = ""
+
+        if event.link != ""
+            video_icon = """<i class="fa fa-video" style="font-size: 8px"></i>"""
+
+        str = """<div class="subhead" data-link="#{event.link}" style="position: absolute; top: #{start_pos+21}px; height: #{height-12}px; width: #{wdth}px; left: #{left}px;">
+            #{video_icon}
+            #{event.title}
             </div> """
 
         dom.append(str)
