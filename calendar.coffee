@@ -15,7 +15,7 @@ BLOCK_HEIGHT = 70
 # Refer to https://hasseg.org/icalBuddy/man.html
 executablePath = "/usr/local/bin/icalBuddy "
 baseCommand = ' eventsToday'
-options = "-npn -nrd -nc -b '' -nnr ' ' -iep 'title,datetime,notes' -ps '|•|' -po 'datetime,title,notes' -tf '%H:%M' -df '%Y-%m-%d'"
+options = "-npn -nrd -nc -b '' -nnr ' ' -iep 'title,datetime,notes' -ps '||' -po 'datetime,title,notes' -tf '%H:%M' -df '%Y-%m-%d'"
 
 command: executablePath + options + baseCommand
 
@@ -134,7 +134,7 @@ update: (output, domEl) ->
     current_hour =  today.getHours() + today.getMinutes() / 60
     min_hour = current_hour
 
-    line_regex = /^(\d+-\d+-\d+)?(?: at )?(\d+:\d+) - (\d+-\d+-\d+)?(?: at )?((?:\d+:\d+)|(?:\.\.\.))•([^•]*)•?([^•]*)?$/
+    line_regex = /^(\d+-\d+-\d+)?(?: at )?(\d+:\d+) - (\d+-\d+-\d+)?(?: at )?((?:\d+:\d+)|(?:\.\.\.))([^]*)?([^]*)?$/
     link_regex = /(https:\/\/.*zoom\.us\/j\/[^ ]*)/
 
     for line in lines
@@ -181,6 +181,13 @@ update: (output, domEl) ->
                         wdth = (WIDTH-67) / 2
                     if event.start_time == ev.start_time and event.end_time > ev.end_time
                         wdth = (WIDTH-67) / 2
+                    if event.start_time == ev.start_time and event.end_time == ev.end_time and event.title != ev.title
+                        if event.title < ev.title
+                            wdth = (WIDTH-67) / 2
+                        else
+                            wdth = (WIDTH-67) / 2 - 11
+                            left = 50 + (WIDTH-67) / 2 + 11
+
                     if event.start_time > ev.start_time or event.end_time < ev.end_time
                         wdth = (WIDTH-67) / 2 - 11
                         left = 50 + (WIDTH-67) / 2 + 11
