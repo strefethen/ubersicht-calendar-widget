@@ -3,12 +3,12 @@
 This widget allows you to display a nice-looking calendar on your desktop. Works especially well with tiling window managers like [yabai](https://github.com/koekeishiya/yabai)
 
 ## Screenshot
-![Ubersicht-calendar](https://github.com/knazarov/ubersicht-calendar/blob/master/screenshot-full.png?raw=true)
+![Ubersicht-calendar](https://github.com/knazarov/ubersicht-calendar-widget/blob/master/screenshot-full.png?raw=true)
 
 ## Installation
 
 ```bash
-git clone git@github.com:knazarov/ubersicht-calendar.git '~/Library/Application Support/Übersicht/widgets/calendar'
+git clone git@github.com:knazarov/ubersicht-calendar-widget.git '~/Library/Application Support/Übersicht/widgets/calendar'
 ```
 
 To get information from the MacOS calendar, this widget needs [icalBuddy](http://hasseg.org/icalBuddy/). You can install it like this:
