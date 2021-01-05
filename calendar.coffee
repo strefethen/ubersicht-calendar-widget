@@ -15,7 +15,7 @@ BLOCK_HEIGHT = 70
 # Refer to https://hasseg.org/icalBuddy/man.html
 executablePath = "/usr/local/bin/icalBuddy "
 baseCommand = ' eventsToday'
-options = "-npn -nrd -nc -b '' -nnr ' ' -iep 'title,datetime,notes' -ps '||' -po 'datetime,title,notes' -tf '%H:%M' -df '%Y-%m-%d'"
+options = "-ea -npn -nrd -nc -b '' -nnr ' ' -iep 'title,datetime,notes' -ps '||' -po 'datetime,title,notes' -tf '%H:%M' -df '%Y-%m-%d'"
 
 command: executablePath + options + baseCommand
 
@@ -138,6 +138,7 @@ update: (output, domEl) ->
     link_regex = /(https:\/\/.*zoom\.us\/j\/[^ ]*)/
 
     for line in lines
+        console.log(line)
         start_time = line_regex.exec(line)[2]
         start_hour = @hours(start_time)
         min_hour = Math.min(min_hour, start_hour)
